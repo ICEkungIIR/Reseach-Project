@@ -1,0 +1,16 @@
+# Full fine-tuning baseline config (both backbones)
+models:
+  - name: "airesearch/wangchanberta-base-att-spm-uncased"
+    tokenizer: "wangchanberta"
+  - name: "clicknext/phayathaibert"
+    tokenizer: "phayathaibert"
+
+training:
+  learning_rate: null   # TODO must match the LoRA configs' value
+  batch_size: null       # TODO must match the LoRA configs' value
+  epochs: null
+  seeds: [0, 1, 2]
+
+tasks:
+  - wisesight_sentiment
+  - thai_ner

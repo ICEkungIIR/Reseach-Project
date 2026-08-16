@@ -1,0 +1,28 @@
+# Core ML stack
+torch>=2.1
+transformers>=4.40
+peft>=0.10
+datasets>=2.18
+accelerate>=0.29
+
+# Data / eval
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+scipy>=1.11          # for significance testing (paired t-test / bootstrap)
+
+# Tokenizer / Thai-specific
+sentencepiece>=0.1.99
+pythainlp>=5.0        # useful for Thai text utilities if needed
+
+# Config / experiment management
+pyyaml>=6.0
+
+# Plotting
+matplotlib>=3.8
+seaborn>=0.13
+
+# NOTE: no CUDA version pinned yet — GPU/HPC spec not confirmed.
+# Once known, install the matching torch build first, e.g.:
+#   pip install torch --index-url https://download.pytorch.org/whl/cu121
+# then: pip install -r requirements.txt

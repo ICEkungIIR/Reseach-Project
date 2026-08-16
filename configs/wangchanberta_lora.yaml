@@ -1,0 +1,20 @@
+# LoRA config — WangchanBERTa backbone
+model:
+  name: "airesearch/wangchanberta-base-att-spm-uncased"  # TODO confirm exact checkpoint
+  tokenizer: "wangchanberta"
+
+lora:
+  ranks: [4, 8, 16, 32]     # r — swept variable
+  alpha_multiplier: 2       # alpha = 2 * r for every rank (fixed)
+  target_modules: ["query", "value"]  # start with attention only
+  dropout: 0.1
+
+training:
+  learning_rate: null       # TODO fix a single value, same across all runs
+  batch_size: null          # TODO fix a single value, same across all runs
+  epochs: null
+  seeds: [0, 1, 2]          # 3 seeds minimum for statistics
+
+tasks:
+  - wisesight_sentiment
+  - thai_ner

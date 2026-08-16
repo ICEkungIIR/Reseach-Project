@@ -1,0 +1,20 @@
+# LoRA config — PhayaThaiBERT backbone
+model:
+  name: "clicknext/phayathaibert"   # TODO confirm exact checkpoint
+  tokenizer: "phayathaibert"
+
+lora:
+  ranks: [4, 8, 16, 32]
+  alpha_multiplier: 2
+  target_modules: ["query", "value"]
+  dropout: 0.1
+
+training:
+  learning_rate: null        # TODO must match wangchanberta_lora.yaml value
+  batch_size: null           # TODO must match wangchanberta_lora.yaml value
+  epochs: null
+  seeds: [0, 1, 2]
+
+tasks:
+  - wisesight_sentiment
+  - thai_ner
