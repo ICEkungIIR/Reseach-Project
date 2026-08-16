@@ -18,6 +18,7 @@ Usage:
 
 import argparse
 import json
+import os
 import time
 from pathlib import Path
 
@@ -43,7 +44,7 @@ from utils.training_common import (
     tokenize_classification_batch,
 )
 
-RUNS_DIR = Path(__file__).resolve().parent.parent / "experiments" / "runs"
+RUNS_DIR = Path(os.environ.get("RUNS_DIR", str(Path(__file__).resolve().parent.parent / "experiments" / "runs")))
 
 
 def parse_args():
