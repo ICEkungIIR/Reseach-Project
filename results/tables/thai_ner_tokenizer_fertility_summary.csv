@@ -1,0 +1,3 @@
+task,tokenizer,n_words,mean_fertility,median_fertility,pct_words_over_3_subwords
+thai_ner,wangchanberta,213828,1.9084,2,0.0228
+thai_ner,phayathaibert,213828,1.8592,2,0.0207

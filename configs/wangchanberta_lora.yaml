@@ -1,18 +1,21 @@
 # LoRA config — WangchanBERTa backbone
 model:
-  name: "airesearch/wangchanberta-base-att-spm-uncased"  # TODO confirm exact checkpoint
+  name: "airesearch/wangchanberta-base-att-spm-uncased"
   tokenizer: "wangchanberta"
 
 lora:
   ranks: [4, 8, 16, 32]     # r — swept variable
-  alpha_multiplier: 2       # alpha = 2 * r for every rank (fixed)
+  alpha_multiplier: 2       # alpha = 2 * r for every rank (fixed) -> {4:8, 8:16, 16:32, 32:64}
   target_modules: ["query", "value"]  # start with attention only
   dropout: 0.1
 
 training:
-  learning_rate: null       # TODO fix a single value, same across all runs
-  batch_size: null          # TODO fix a single value, same across all runs
-  epochs: null
+  learning_rate: 1e-4       # LoRA-specific LR (higher than full FT, per Shuttleworth et al. 2024 / PEFT guidance)
+  fp16: true
+  batch_size: 8              # per-device batch size
+  gradient_accumulation_steps: 4   # effective batch size = 8 * 4 = 32
+  weight_decay: 0.01
+  epochs: 5
   seeds: [0, 1, 2]          # 3 seeds minimum for statistics
 
 tasks:

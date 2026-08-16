@@ -6,9 +6,13 @@ models:
     tokenizer: "phayathaibert"
 
 training:
-  learning_rate: null   # TODO must match the LoRA configs' value
-  batch_size: null       # TODO must match the LoRA configs' value
-  epochs: null
+  learning_rate: 2e-5        # full-FT-specific LR (lower than LoRA — standard practice, avoids
+                              # biasing the LoRA-vs-fullFT gap with a mismatched hyperparameter)
+  fp16: true
+  batch_size: 8               # must match the LoRA configs' value
+  gradient_accumulation_steps: 4    # effective batch size = 8 * 4 = 32, same as LoRA configs
+  weight_decay: 0.01
+  epochs: 5
   seeds: [0, 1, 2]
 
 tasks:

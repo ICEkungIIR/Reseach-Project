@@ -1,6 +1,8 @@
 # Core ML stack
 torch>=2.1
-transformers>=4.40
+transformers>=4.40,<5.0   # PINNED: v5.0 (Dec 2025) is a major rewrite with breaking API changes
+                          # (e.g. TrainingArguments no longer accepts logging_dir). Training
+                          # scripts here target the well-documented 4.x Trainer/TrainingArguments API.
 peft>=0.10
 datasets>=2.18
 accelerate>=0.29
@@ -10,8 +12,10 @@ pandas>=2.0
 numpy>=1.24
 scikit-learn>=1.3
 scipy>=1.11          # for significance testing (paired t-test / bootstrap)
+seqeval>=1.2          # entity-level F1 for thai_ner
 
 # Tokenizer / Thai-specific
+protobuf>=4.25          # required for SentencePiece tokenizer conversion in transformers
 sentencepiece>=0.1.99
 pythainlp>=5.0        # useful for Thai text utilities if needed
 
