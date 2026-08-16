@@ -136,13 +136,33 @@ def main():
         env = os.environ.copy()
         env["RUNS_DIR"] = str(RUNS_DIR)
 
-        result = subprocess.run(r["cmd"], cwd=str(REPO_ROOT), env=env)
+        # Full output (progress bars, per-step loss) is written to a log
+        # file in Drive to avoid flooding the notebook cell. Per-epoch
+        # eval results (Trainer prints a dict containing "eval_" once
+        # per epoch, since eval_strategy="epoch") are additionally
+        # echoed to the notebook so progress is still visible live.
+        run_dir = RUNS_DIR / r["run_name"]
+        run_dir.mkdir(parents=True, exist_ok=True)
+        log_path = run_dir / "train_log.txt"
 
-        if result.returncode != 0:
+        with open(log_path, "w", encoding="utf-8") as log_file:
+            process = subprocess.Popen(
+                r["cmd"], cwd=str(REPO_ROOT), env=env,
+                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                text=True, bufsize=1,
+            )
+            for line in process.stdout:
+                log_file.write(line)
+                if "eval_" in line:
+                    print(f"    {line.rstrip()}")
+            process.wait()
+            returncode = process.returncode
+
+        if returncode != 0:
             n_failed += 1
             with open(FAILED_LOG, "a", encoding="utf-8") as f:
-                f.write(f"{r['run_name']}\treturncode={result.returncode}\tcmd={' '.join(r['cmd'])}\n")
-            print(f"  FAILED (see {FAILED_LOG}) — continuing with next run")
+                f.write(f"{r['run_name']}\treturncode={returncode}\tcmd={' '.join(r['cmd'])}\n")
+            print(f"  FAILED (log: {log_path}) — continuing with next run")
         else:
             n_ran += 1
             print(f"  OK: {r['run_name']}")
