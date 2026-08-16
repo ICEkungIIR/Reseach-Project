@@ -4,6 +4,8 @@ transformers>=4.40,<5.0   # PINNED: v5.0 (Dec 2025) is a major rewrite with brea
                           # (e.g. TrainingArguments no longer accepts logging_dir). Training
                           # scripts here target the well-documented 4.x Trainer/TrainingArguments API.
 peft>=0.10
+torchao>=0.16.0        # peft's LoRA dispatcher checks torchao version even if unused;
+                        # Colab ships an older torchao (0.10.0) that fails this check
 datasets>=2.18
 accelerate>=0.29
 
