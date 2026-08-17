@@ -48,7 +48,7 @@ CONFIG_FOR_BACKBONE = {
 FULL_FT_CONFIG = REPO_ROOT / "configs" / "full_ft.yaml"
 
 
-def build_matrix(only_task=None, only_backbone=None):
+def build_matrix(only_task=None, only_backbone=None, only_method=None):
     """
     Returns a list of run specs. Each spec is a dict with everything
     needed to (a) predict the run's output dir name (must match the
@@ -66,35 +66,37 @@ def build_matrix(only_task=None, only_backbone=None):
                 continue
 
             # LoRA runs
-            for rank in RANKS:
+            if only_method in (None, "lora"):
+                for rank in RANKS:
+                    for seed in SEEDS:
+                        run_name = f"{backbone}_{task}_lora_r{rank}_seed{seed}"
+                        runs.append({
+                            "run_name": run_name,
+                            "method": "lora",
+                            "cmd": [
+                                sys.executable, "src/train_lora.py",
+                                "--config", str(CONFIG_FOR_BACKBONE[backbone]),
+                                "--task", task,
+                                "--rank", str(rank),
+                                "--seed", str(seed),
+                            ],
+                        })
+
+            # Full FT runs
+            if only_method in (None, "full_ft"):
                 for seed in SEEDS:
-                    run_name = f"{backbone}_{task}_lora_r{rank}_seed{seed}"
+                    run_name = f"{backbone}_{task}_fullft_seed{seed}"
                     runs.append({
                         "run_name": run_name,
-                        "method": "lora",
+                        "method": "full_ft",
                         "cmd": [
-                            sys.executable, "src/train_lora.py",
-                            "--config", str(CONFIG_FOR_BACKBONE[backbone]),
+                            sys.executable, "src/train_full_ft.py",
+                            "--config", str(FULL_FT_CONFIG),
+                            "--model", backbone,
                             "--task", task,
-                            "--rank", str(rank),
                             "--seed", str(seed),
                         ],
                     })
-
-            # Full FT runs
-            for seed in SEEDS:
-                run_name = f"{backbone}_{task}_fullft_seed{seed}"
-                runs.append({
-                    "run_name": run_name,
-                    "method": "full_ft",
-                    "cmd": [
-                        sys.executable, "src/train_full_ft.py",
-                        "--config", str(FULL_FT_CONFIG),
-                        "--model", backbone,
-                        "--task", task,
-                        "--seed", str(seed),
-                    ],
-                })
 
     return runs
 
@@ -107,10 +109,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--only-task", choices=["wisesight_sentiment", "thai_ner"], default=None)
     parser.add_argument("--only-backbone", choices=["wangchanberta", "phayathaibert"], default=None)
+    parser.add_argument("--only-method", choices=["lora", "full_ft"], default=None)
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    runs = build_matrix(only_task=args.only_task, only_backbone=args.only_backbone)
+    runs = build_matrix(only_task=args.only_task, only_backbone=args.only_backbone, only_method=args.only_method)
 
     print(f"Matrix has {len(runs)} runs total. RUNS_DIR={RUNS_DIR}")
 
